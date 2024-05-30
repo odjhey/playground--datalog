@@ -9,5 +9,8 @@
   },
   "devDependencies": {
     "tsx": "^4.11.0"
+  },
+  "dependencies": {
+    "datascript": "^1.6.5"
   }
 }

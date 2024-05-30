@@ -117,6 +117,11 @@
   resolved "https://registry.yarnpkg.com/@esbuild/win32-x64/-/win32-x64-0.20.2.tgz#9c907b21e30a52db959ba4f80bb01a0cc403d5cc"
   integrity sha512-N49X4lJX27+l9jbLKSqZ6bKNjzQvHaT8IIFUy+YIqmXQdjYCToGWwOItDrfby14c78aDd5NHQl29xingXfCdLQ==
 
+datascript@^1.6.5:
+  version "1.6.5"
+  resolved "https://registry.yarnpkg.com/datascript/-/datascript-1.6.5.tgz#40de411bd74fd0509d809781b36890b552ecb601"
+  integrity sha512-U/+7uKWUTHLQIvRRVduuPt1rbUJNqf8ABZko2OgVLEFMJKhcIc97ASjPLEDEoGoyvhufRJRu9Mvh/xh0Ix1geg==
+
 esbuild@~0.20.2:
   version "0.20.2"
   resolved "https://registry.yarnpkg.com/esbuild/-/esbuild-0.20.2.tgz#9d6b2386561766ee6b5a55196c6d766d28c87ea1"

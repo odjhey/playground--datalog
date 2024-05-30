@@ -1,50 +1,107 @@
 import * as d from 'datascript'
 import { edn } from './utils/ednTemplateTag'
 
-// Use regular JS API for create connection and add data to DB',
-// schema is JS Object
-var schema = {
-  aka: { ':db/cardinality': ':db.cardinality/many' },
-  friend: { ':db/valueType': ':db.type/ref' },
+const schema = {
+  ':lift/tags': {
+    ':db/valueType': ':db.type/ref',
+    ':db/cardinality': ':db.cardinality/many',
+  },
+  ':schedule/tags': {
+    ':db/valueType': ':db.type/ref',
+    ':db/cardinality': ':db.cardinality/many',
+  },
 }
 
-var conn = d.create_conn(schema)
-var reports = []
-
+const conn = d.create_conn(schema)
+const reports: any[] = []
 d.listen(conn, 'main', (report) => {
   reports.push(report)
 })
 
-var datoms = [
-  {
-    ':db/id': -1,
-    name: 'Ivan',
-    age: 18,
-    aka: ['X', 'Y'],
-  },
-  {
-    ':db/id': -2,
-    name: 'Igor',
-    aka: ['Grigory', 'Egor'],
-  },
-  [':db/add', -1, 'friend', -2],
+const TAGS = {
+  PUSH: [-1, 'push'],
+  PULL: [-2, 'pull'],
+  LEG: [-3, 'leg'],
+}
+
+const tags = Object.keys(TAGS)
+  .map((v) => {
+    return { ':db/id': TAGS[v][0], ':tag/name': TAGS[v][1] }
+  })
+  .concat([{ ':db/id': -4, ':tag/name': 'bxp' }])
+
+const id = (v) => v[0]
+
+// @todo find ways to better handle id's
+
+// lifts by push, pull, leg
+const liftsByTagDb = {
+  [id(TAGS.PUSH)]: [
+    'bench press',
+    'inclined dumbbell press',
+    'shoulder press',
+    'dumbbell fly',
+    'tri push-down',
+    'single arm tri',
+  ],
+  [id(TAGS.PULL)]: ['lat pulldown'],
+  [id(TAGS.LEG)]: ['squat', 'dead-lift', 'leg curl', 'leg extension'],
+}
+
+// convert to liftsDb like structure
+const liftsDb = Object.entries(liftsByTagDb).flatMap(([tagId, lifts]) => {
+  return lifts.map((lift) => [lift, [+tagId]] as const)
+})
+
+const extraTags = [{ 'bench press': [-4] }]
+
+const lifts = liftsDb.map(([name, tags], i) => {
+  const matchTag = extraTags.find((v) => v[name])
+  const tagId = matchTag ? matchTag[name] : []
+
+  return {
+    ':db/id': 1000 * (i + 1) * -1,
+    ':lift/name': name,
+    ':lift/tags': [...tags, ...tagId],
+  }
+})
+
+const schedules = [
+  { ':db/id': -20, ':schedule/day': 'monday', ':schedule/tags': [-1] },
+  { ':db/id': -21, ':schedule/day': 'tuesday', ':schedule/tags': [-2] },
+  { ':db/id': -22, ':schedule/day': 'wednesday', ':schedule/tags': [-3] },
+  { ':db/id': -23, ':schedule/day': 'thursday', ':schedule/tags': [] },
+  { ':db/id': -24, ':schedule/day': 'friday', ':schedule/tags': [-1] },
+  { ':db/id': -25, ':schedule/day': 'saturday', ':schedule/tags': [-2] },
+  { ':db/id': -26, ':schedule/day': 'sunday', ':schedule/tags': [-3] },
 ]
 
-// Tx is Js Array of Object or Array
-d.transact(conn, datoms, 'initial info about Igor and Ivan')
+const txData = [...tags, ...lifts, ...schedules]
 
-// report is regular JS object'
-// query mori values from conn with CLJS API
+d.transact(conn, txData, 'initial')
 
-// show whole DB
+const queryLiftsByDay = edn`[
+    :find ?liftName
+    :in $ ?scheduleDay ?place
+    :where
+      [?scheduleRef ":schedule/day" ?scheduleDay]
+      [?scheduleRef ":schedule/tags" ?tag]
+      [?tag ":tag/name" ?tagName]
+      [?lift ":lift/tags" ?tag]
+      [?lift ":lift/name" ?liftName]
+      [?lift ":lift/tags" ?allTags]
+      [?allTags ":tag/name" ?place]
+    ]`
 
-const result = d.q(
-  edn`[:find ?n :in $ ?a 
-          :where  [?e "friend" ?f] 
-                  [?e "age" ?a] 
-                  [?f "name" ?n]]`,
-  d.db(conn),
-  18
-)
-
-console.log(result)
+;[
+  'monday',
+  'tuesday',
+  'wednesday',
+  'thursday',
+  'friday',
+  'saturday',
+  'sunday',
+].forEach((day) => {
+  const result = d.q(queryLiftsByDay, d.db(conn), day, 'bxp')
+  console.log(day, result)
+})

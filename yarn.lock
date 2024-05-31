@@ -122,6 +122,11 @@ datascript@^1.6.5:
   resolved "https://registry.yarnpkg.com/datascript/-/datascript-1.6.5.tgz#40de411bd74fd0509d809781b36890b552ecb601"
   integrity sha512-U/+7uKWUTHLQIvRRVduuPt1rbUJNqf8ABZko2OgVLEFMJKhcIc97ASjPLEDEoGoyvhufRJRu9Mvh/xh0Ix1geg==
 
+date-fns@^3.6.0:
+  version "3.6.0"
+  resolved "https://registry.yarnpkg.com/date-fns/-/date-fns-3.6.0.tgz#f20ca4fe94f8b754951b24240676e8618c0206bf"
+  integrity sha512-fRHTG8g/Gif+kSh50gaGEdToemgfj74aRX3swtiouboip5JDLAyDE9F11nHMIcvOaXeOC6D7SpNhi7uFyB7Uww==
+
 esbuild@~0.20.2:
   version "0.20.2"
   resolved "https://registry.yarnpkg.com/esbuild/-/esbuild-0.20.2.tgz#9d6b2386561766ee6b5a55196c6d766d28c87ea1"

@@ -2,6 +2,7 @@ import * as d from "datascript"; // version "1.6.5"
 import { edn } from "./edn-template-tag";
 
 export const helloWorld = () => "yaharu";
+export { edn };
 
 export const store = (
   hydrateValue: string | undefined,
@@ -54,8 +55,18 @@ export const store = (
         delete __listeners[key];
       };
     },
-    q: () => {
+
+    // @todo exposing transact is temporary
+    t: (query: unknown[]) => {
+      d.transact(conn, query);
+    },
+
+    qAll: () => {
       return d.q(query, d.db(conn));
+    },
+
+    q: (query: string, ...rest: unknown[]) => {
+      return d.q(query, d.db(conn), ...rest);
     },
   };
 

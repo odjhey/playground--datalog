@@ -1,3 +1,4 @@
+import { edn } from "@app/core";
 import "./App.css";
 import { StateProvider } from "./contexts/store-context";
 import { useAppState } from "./hooks/use-store";
@@ -11,13 +12,20 @@ function App() {
 }
 
 function Component() {
-  const { value, add } = useAppState();
+  const { value, t, q } = useAppState();
+
+  const query = edn`[:find ?e ?name ?age 
+        :where 
+          [?e "name" ?name] 
+          [?e "age" ?age]]`;
   return (
     <div>
-      {JSON.stringify(value)}
+      <div>{JSON.stringify(value)}</div>
+      <div>{JSON.stringify(q(query))}</div>
+
       <button
         onClick={() => {
-          add();
+          t([{ ":db/add": -1, name: "james", age: 99 }]);
         }}
       >
         add

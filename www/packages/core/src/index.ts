@@ -1,4 +1,5 @@
 import * as d from "datascript"; // version "1.6.5"
+import { edn } from "./edn-template-tag";
 
 export const helloWorld = () => "yaharu";
 
@@ -17,7 +18,7 @@ export const store = (
   const conn = db ? d.conn_from_db(db) : d.create_conn();
   let __listeners = listeners;
 
-  const query = `[:find ?e ?name ?age 
+  const query = edn`[:find ?e ?name ?age 
         :where 
           [?e "name" ?name] 
           [?e "age" ?age]]`;

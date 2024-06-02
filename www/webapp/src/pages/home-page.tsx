@@ -1,11 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { edn } from "@app/core";
-import "./App.css";
-import { StateProvider } from "./contexts/store-context";
-import { useAppState } from "./hooks/use-store";
 import { useState } from "react";
+import { StateProvider } from "../contexts/store-context";
+import { useAppState } from "../hooks/use-store";
 
-function App() {
+export function HomePage() {
   return (
     <StateProvider>
       <Component />
@@ -79,5 +78,3 @@ function Component() {
     </div>
   );
 }
-
-export default App;

@@ -6,17 +6,29 @@ export const store = (
   hydrateValue: string | undefined,
   {
     storage,
+    listeners,
   }: {
     storage: { save: (v: string) => void };
+    listeners: { [key: string]: (v: any) => void };
   }
 ) => {
   const snapshot = hydrateValue ? JSON.parse(hydrateValue) : undefined;
-  console.log("snapshot", snapshot);
   const db = snapshot ? d.from_serializable(snapshot) : d.empty_db();
   const conn = db ? d.conn_from_db(db) : d.create_conn();
+  let __listeners = listeners;
+
+  const query = `[:find ?e ?name ?age 
+        :where 
+          [?e "name" ?name] 
+          [?e "age" ?age]]`;
 
   d.listen(conn, "main", (r) => {
-    storage.save(JSON.stringify(d.serializable(r.db_after)));
+    const value = d.serializable(r.db_after);
+    storage.save(JSON.stringify(value));
+    const listenerKeys = Object.keys(__listeners);
+    listenerKeys.forEach((k) => {
+      __listeners[k](d.q(query, r.db_after));
+    });
   });
 
   const addEntity = (conn: any, e: { name: string; age: number }) => {
@@ -29,20 +41,20 @@ export const store = (
     d.transact(conn, [[":db/retractEntity", id]]);
   };
 
-  console.log(d.q(`[:find ?e ?a ?v :where [?e ?a ?v]]`, d.db(conn)));
+  // console.log(d.q(`[:find ?e ?a ?v :where [?e ?a ?v]]`, d.db(conn)));
 
   const self = {
     conn,
     add: (e: { name: string; age: number }) => addEntity(conn, e),
     remove: (e: { id: number }) => removeEntity(conn, e),
+    addListener: (key: string, listener: (v: any) => void) => {
+      __listeners[key] = listener;
+      return () => {
+        delete __listeners[key];
+      };
+    },
     q: () => {
-      return d.q(
-        `[:find ?e ?name ?age 
-        :where 
-          [?e "name" ?name] 
-          [?e "age" ?age]]`,
-        d.db(conn)
-      );
+      return d.q(query, d.db(conn));
     },
   };
 

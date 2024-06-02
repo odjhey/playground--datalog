@@ -1,36 +1,26 @@
-import { useState } from "react";
 import "./App.css";
-import { store } from "@app/core";
-
-const STORAGE_KEY = "www-datascript-playground-test-data000001";
-
-const s = store(localStorage.getItem(STORAGE_KEY) ?? undefined, {
-  storage: {
-    save: (v) => {
-      console.log("save", v);
-      localStorage.setItem(STORAGE_KEY, v);
-    },
-  },
-});
+import { StateProvider } from "./contexts/store-context";
+import { useAppState } from "./hooks/use-store";
 
 function App() {
-  const [a, setA] = useState(s.q);
+  return (
+    <StateProvider>
+      <Component />
+    </StateProvider>
+  );
+}
+
+function Component() {
+  const { value, add } = useAppState();
   return (
     <div>
-      {JSON.stringify(a)}
+      {JSON.stringify(value)}
       <button
         onClick={() => {
-          s.add({ name: "ju", age: 2 });
+          add();
         }}
       >
         add
-      </button>
-      <button
-        onClick={() => {
-          setA(s.q());
-        }}
-      >
-        refresh
       </button>
     </div>
   );

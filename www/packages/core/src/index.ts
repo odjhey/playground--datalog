@@ -51,8 +51,11 @@ export const store = (
 
     // @todo exposing transact is temporary
     t: (query: unknown[]) => {
-      history.append(JSON.stringify({ tx: Date.now(), query }));
-      d.transact(conn, query);
+      const result = d.transact(conn, query);
+      const { tx_data, tempids } = result;
+      history.append(
+        JSON.stringify({ tx: Date.now(), query, __meta: { tx_data, tempids } })
+      );
     },
 
     // @todo exposing query is temporary

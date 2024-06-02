@@ -15,8 +15,6 @@ const s = store(localStorage.getItem(STORAGE_KEY) ?? undefined, {
 
 export const StateContext = createContext<
   | {
-      value: any;
-      add: () => void;
       t: (t: unknown[]) => void;
       q: (query: string, ...sources: any[]) => any;
     }
@@ -24,7 +22,7 @@ export const StateContext = createContext<
 >(undefined);
 
 export const StateProvider = (props: PropsWithChildren) => {
-  const [state, setState] = useState(s.qAll());
+  const [, setState] = useState();
 
   useEffect(() => {
     const unsubscribe = s.addListener("main", (v: any) => {
@@ -38,10 +36,6 @@ export const StateProvider = (props: PropsWithChildren) => {
   return (
     <StateContext.Provider
       value={{
-        value: state,
-        add: () => {
-          s.add({ name: "ju", age: 2 });
-        },
         t: (t) => {
           s.t(t);
         },

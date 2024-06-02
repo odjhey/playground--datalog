@@ -1,18 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { edn } from "@app/core";
 import { useState } from "react";
-import { StateProvider } from "../contexts/store-context";
 import { useAppState } from "../hooks/use-store";
 
 export function HomePage() {
-  return (
-    <StateProvider>
-      <Component />
-    </StateProvider>
-  );
-}
-
-function Component() {
   const [user, setUser] = useState<{ name: string; age: number }>({
     name: "",
     age: 0,
@@ -31,21 +22,6 @@ function Component() {
 
   return (
     <div className="m-2 flex flex-col gap-2">
-      {result.map((v) => {
-        return (
-          <div className="flex flex-row gap-2" key={v.key}>
-            {v.key}: {v.name} {v.age}
-            <button
-              className="btn btn-xs btn-error"
-              onClick={() => {
-                t([[":db/retractEntity", v.key]]);
-              }}
-            >
-              x
-            </button>
-          </div>
-        );
-      })}
       <div className="flex flex-row gap-2">
         name:{" "}
         <input
@@ -75,6 +51,21 @@ function Component() {
           replay
         </button>
       </div>
+      {result.map((v) => {
+        return (
+          <div className="flex flex-row gap-2" key={v.key}>
+            {v.key}: {v.name} {v.age}
+            <button
+              className="btn btn-xs btn-error"
+              onClick={() => {
+                t([[":db/retractEntity", v.key]]);
+              }}
+            >
+              x
+            </button>
+          </div>
+        );
+      })}
     </div>
   );
 }

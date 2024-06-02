@@ -2,7 +2,7 @@ import { z } from "zod";
 import { useAppState } from "../hooks/use-store";
 
 const SCHEMA = z.object({
-  tx: z.number(),
+  timez: z.number(),
   query: z.array(z.any()),
 });
 
@@ -30,11 +30,11 @@ export function HistoryPage() {
   return (
     <div className="m-2 flex flex-col gap-2">
       {result.data
-        .sort((a, b) => b.tx - a.tx)
+        .sort((a, b) => b.timez - a.timez)
         .map((v) => {
           return (
-            <div className="flex flex-row gap-2" key={v.tx}>
-              {v.tx}: {JSON.stringify(v.query)}
+            <div className="flex flex-row gap-2" key={v.timez}>
+              {v.timez}: {JSON.stringify(v.query)}
             </div>
           );
         })}

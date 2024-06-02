@@ -42,7 +42,7 @@ export const store = (
     },
     history: {
       // @todo id's are temporary in history, so without dropping the DB, this is not isomorphic
-      replay: (transactions: { tx: number; query: unknown[] }[]) => {
+      replay: (transactions: { timez: number; query: unknown[] }[]) => {
         transactions.forEach((tx) => {
           d.transact(conn, tx.query);
         });
@@ -54,7 +54,11 @@ export const store = (
       const result = d.transact(conn, query);
       const { tx_data, tempids } = result;
       history.append(
-        JSON.stringify({ tx: Date.now(), query, __meta: { tx_data, tempids } })
+        JSON.stringify({
+          timez: Date.now(),
+          query,
+          __meta: { tx_data, tempids },
+        })
       );
     },
 

@@ -6,9 +6,15 @@ export const store = (
   hydrateValue: string | undefined,
   {
     storage,
+    history,
     listeners,
   }: {
-    storage: { save: (v: string) => void };
+    storage: {
+      save: (v: string) => void;
+    };
+    history: {
+      append: (v: string) => void;
+    };
     listeners: { [key: string]: (v: any) => void };
   }
 ) => {
@@ -34,9 +40,18 @@ export const store = (
         delete __listeners[key];
       };
     },
+    history: {
+      // @todo id's are temporary in history, so without dropping the DB, this is not isomorphic
+      replay: (transactions: { tx: number; query: unknown[] }[]) => {
+        transactions.forEach((tx) => {
+          d.transact(conn, tx.query);
+        });
+      },
+    },
 
     // @todo exposing transact is temporary
     t: (query: unknown[]) => {
+      history.append(JSON.stringify({ tx: Date.now(), query }));
       d.transact(conn, query);
     },
 

@@ -18,7 +18,7 @@ function Component() {
     name: "",
     age: 0,
   });
-  const { t, q } = useAppState();
+  const { t, q, history, replay } = useAppState();
 
   const query = edn`[:find ?e ?name
         :where 
@@ -63,6 +63,13 @@ function Component() {
         }}
       >
         add
+      </button>
+      <button
+        onClick={() => {
+          replay(history().map((v) => JSON.parse(v as string)));
+        }}
+      >
+        replay
       </button>
     </div>
   );
